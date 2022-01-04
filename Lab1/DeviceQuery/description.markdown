@@ -1,7 +1,6 @@
 ---
 title: Device Query
-author: GPU Teaching Kit -- Accelerated Computing
-module: 2
+lab: 1
 ---
 
 # Objective
@@ -21,15 +20,3 @@ The `gpuTKLog` function logs results, specifically we log the following hardware
 - Maximum size of GPU memory
 - Amount of constant and share memory
 - Warp size
-
-The details are explained in the first and second modules of the teaching kit.
-
-# Local Setup Instructions
-
-The most recent version of source code for this lab along with the build-scripts can be found on the [Bitbucket repository](LINKTOLAB). A description on how to use the [CMake](https://cmake.org/) tool in along with how to build the labs for local development found in the [README](LINKTOREADME) document in the root of the repository.
-
-The executable generated as a result of compiling the lab can be run using the following command:
-
-```
-./DeviceQuery_Template
-```
