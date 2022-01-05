@@ -1,9 +1,22 @@
 # cse160-WI22
 Materials for CSE 160 Programming Assignments
 
-## Setup Guide
+## Access DSMLP using ssh
 
-## Get Access to DSMLP using VSCode:
+You will use the [UCSD Data Science / Machine Learning Platform (DSMLP)](https://support.ucsd.edu/its?id=kb_article_view&sys_kb_id=fda9846287908954947a0fa8cebb352b) to get access to a GPU. 
+
+You can login to DSMLP using by `ssh USERNAME@dsmlp-login.ucsd.edu`. Your username and password are your UCSD account. You can set up an [ssh key](https://support.ucsd.edu/services?id=kb_article_view&sys_kb_id=711d8e9e1b7b34d473462fc4604bcb47) that allows you to more easily login. 
+
+DSMLP uses containers to set up its software environment. You must create a container that provides access to a GPU with CUDA installed using the command ` launch.sh -g 1 -s -i ucsdets/nvcr-cuda:latest`
+
+Once you have that container, you can compile and run the Makefiles in the PA directories.
+
+Please be considerate on your use of the GPUs. The GPUs in DSMLP are shared within this class and across campus. If you are not actively using the GPU, you should shut down the container to allow others to access it.
+
+
+## Access DSMLP using VSCode:
+
+It is possible to access DSMLP using a local version of VSCode. 
 
 Steps:
 
