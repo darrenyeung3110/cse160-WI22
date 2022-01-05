@@ -22,7 +22,7 @@ Steps:
 
 A video is attached in case there are any issues with following the steps:
 
-https://user-images.githubusercontent.com/43923184/148270493-460d2b8d-b344-45f0-bc2a-6d5d75ded223.mp4
+https://user-images.githubusercontent.com/43923184/148276847-f92fdbd4-14a4-4749-9b89-615c64b7ad81.mp4
 
 ## Access to CUDA and GPU:
 
