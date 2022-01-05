@@ -39,4 +39,4 @@ We use libgputk which contains the library for cuda. To build this library navig
 1. `make` 
 2. `make libgputk.a`
 
-This completes the setup process! Instructions for each lab is under the specific Lab folders.
+This completes the setup process! Instructions for each programming assignment is under the specific Programming Assignment (PA) folders.
