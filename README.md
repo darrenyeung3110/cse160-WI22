@@ -31,12 +31,8 @@ You should see an output like this:
 
 ![image](https://user-images.githubusercontent.com/43923184/148271105-200ed36c-dc88-4b01-9b68-cdb61a36b655.png)
 
-This gives you access to GPU infrastructure on DSMLP.
+This gives you access to GPU infrastructure on DSMLP; it starts a container with GPU access and loads it with a software image that contains CUDA and other basic packages. 
 
-## Build the libgputk Library
+You must be within GPU container in order to properly compile. If you get an error about not having access to nvcc, then you are not in the container.
 
-We use libgputk which contains the library for cuda. To build this library navigate to the `libgputk` folder and run the following commands:
-1. `make` 
-2. `make libgputk.a`
-
-This completes the setup process! Instructions for each programming assignment is under the specific Programming Assignment (PA) folders.
+Please only use the container when you are compiling and release it when you are completed. 
