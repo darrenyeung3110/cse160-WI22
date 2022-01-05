@@ -20,3 +20,7 @@ The `gpuTKLog` function logs results, specifically we log the following hardware
 - Maximum size of GPU memory
 - Amount of constant and share memory
 - Warp size
+
+# How to Run
+
+The `template.cu` file contains the code for the Lab. There is a Makefile included in the Lab folder which compiles it and links it with the libgputk CUDA library automatically. It can be run by typing `make` from the DeviceQuery folder. It generates a `solution` output file.
