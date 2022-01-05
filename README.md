@@ -14,7 +14,7 @@ Once you have that container, you can compile and run the Makefiles in the PA di
 Please be considerate on your use of the GPUs. The GPUs in DSMLP are shared within this class and across campus. If you are not actively using the GPU, you should shut down the container to allow others to access it.
 
 
-## Access DSMLP using VSCode:
+## Access DSMLP using VSCode
 
 It is possible to access DSMLP using a local version of VSCode. 
 
