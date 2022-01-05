@@ -30,7 +30,7 @@ Steps:
 5. Type in USERNAME@dsmlp-login.ucsd.edu (USERNAME to be replaced with your UCSD Active Directory username)
 6. Click on where you want to save the SSH Configuration
 7. Click on the Connect Popup
-8. Type your UCSD Active Directory password when prompted and press enter
+8. Type your UCSD password when prompted and press enter
 9. You are now connected to UCSD DSMLP! It can be verified by checking the bottom left corner which indicates dsmlp-login.ucsd.edu
 
 A video is attached in case there are any issues with following the steps:
