@@ -1,0 +1,3 @@
+why do we need double pointers 
+why the <<<>>> syntax
+why do we need to fuck with row/column major when we can just pass in 2d array or is that not how it works 
