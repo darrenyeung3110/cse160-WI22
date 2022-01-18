@@ -25,7 +25,7 @@ The `template.cu` file contains the code for the programming assignment. There i
 
 ## How to test
 
-Use the `make run` commad to test your program. There are a total of 10 tests on which your program will be evaluated.
+Use the `make run` commad to test your program. There are a total of 9 tests on which your program will be evaluated.
 
 ## Dataset Generation (optional)
 
