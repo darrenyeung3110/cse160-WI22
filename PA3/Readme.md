@@ -1,5 +1,5 @@
 
-# Programming Assignment 2: Vector Addition
+# Programming Assignment 3: Matrix Multiplication
 
 ## Objective
 
