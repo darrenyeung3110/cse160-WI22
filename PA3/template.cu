@@ -34,6 +34,9 @@ int main(int argc, char **argv) {
   int numCRows;    // number of rows in the matrix C (you have to set this)
   int numCColumns; // number of columns in the matrix C (you have to set
                    // this)
+  int aSize = numARows * numAColumns; 
+  int bSize = numBRows * numBColumns; 
+
 
   args = gpuTKArg_read(argc, argv);
 
@@ -43,8 +46,10 @@ int main(int argc, char **argv) {
   hostB = (float *)gpuTKImport(gpuTKArg_getInputFile(args, 1), &numBRows,
                             &numBColumns);
   //@@ Set numCRows and numCColumns
-  numCRows    = 0;
-  numCColumns = 0;
+  // ARowsXACols * BRowsXBCols = ARows X BCols
+  numCRows    = numARows; 
+  numCColumns = numBColumns; 
+  int cSize = numCRows * numCColumns;
   //@@ Allocate the hostC matrix
   gpuTKTime_stop(Generic, "Importing data and creating memory on host");
 
@@ -53,12 +58,15 @@ int main(int argc, char **argv) {
 
   gpuTKTime_start(GPU, "Allocating GPU memory.");
   //@@ Allocate GPU memory here
-
+  cudaMalloc((void**)&deviceA, aSize * (sizeof(float)));
+  cudaMalloc((void**)&deviceB, bSize * (sizeof(float)));
+  cudaMalloc((void**)&deviceC, cSize * (sizeof(float)));
   gpuTKTime_stop(GPU, "Allocating GPU memory.");
 
   gpuTKTime_start(GPU, "Copying input memory to the GPU.");
   //@@ Copy memory to the GPU here
-
+  cudaMemcpy(deviceA, hostA, aSize*(sizeof(float)), cudaMemcpyHostToDevice);
+  cudaMemcpy(deviceB, hostB, bSize*(sizeof(float)), cudaMemcpyHostToDevice);
   gpuTKTime_stop(GPU, "Copying input memory to the GPU.");
 
   //@@ Initialize the grid and block dimensions here
