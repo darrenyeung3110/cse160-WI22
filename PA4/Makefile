@@ -1,16 +1,16 @@
 all:	solution
 
 solution:	template.o
-		nvcc -o solution -lm -lcuda -lrt template.o ../../libgputk/lib/libgputk.a 
+		nvcc -o solution -lm -lcuda -lrt template.o ../libgputk/lib/libgputk.a 
 
 template.o:	template.cu
-		nvcc --compile template.cu -I ../../libgputk/
+		nvcc --compile template.cu -I ../libgputk/
 
 dataset_generator:	dataset_generator.o
-		nvcc -o dataset_generator -lm -lcuda -lrt dataset_generator.o ../../libgputk/lib/libgputk.a 
+		nvcc -o dataset_generator -lm -lcuda -lrt dataset_generator.o ../libgputk/lib/libgputk.a 
 
 dataset_generator.o:	dataset_generator.cpp
-		nvcc --compile dataset_generator.cpp -I ../../libgputk/
+		nvcc --compile dataset_generator.cpp -I ../libgputk/
 
 clean:
 		@-rm -f dataset_generator.o
