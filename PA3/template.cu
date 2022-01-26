@@ -91,8 +91,14 @@ int main(int argc, char **argv) {
   //@@ Initialize the grid and block dimensions here
   int gridRows;
   int gridCols; 
-  gridRows = ceil((float)numCRows/BLOCK_WIDTH); 
-  gridCols = ceil((float)numCColumns/BLOCK_WIDTH); 
+  if (numCRows % 2 != 0) 
+      gridRows = (numCRows + 1) / 2; 
+  else 
+      gridRows = (numCRows) / 2; 
+  if (numCColumns % 2 != 0) 
+      gridCols = (numCColumns + 1) / 2; 
+  else 
+      gridCols = numCColumns / 2; 
 
   dim3 grid_size(gridRows, gridCols); 
   dim3 block_size(BLOCK_WIDTH, BLOCK_WIDTH); // 2x2
