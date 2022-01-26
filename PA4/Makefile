@@ -50,3 +50,9 @@ run: solution
 		@echo "test - 8"
 		@./solution -e ./Dataset/8/output.raw -i ./Dataset/8/input0.raw,./Dataset/8/input1.raw -t matrix
 		@echo "\n"
+
+run_big: solution
+		@echo "\n"
+		@echo "test - 9"
+		@./solution -e ./Dataset/9/output.raw -i ./Dataset/9/input0.raw,./Dataset/9/input1.raw -t matrix
+		@echo "\n"
