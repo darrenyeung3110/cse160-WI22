@@ -117,5 +117,6 @@ int main() {
   create_dataset(6, 67, 53, 64);
   create_dataset(7, 29, 117, 85);
   create_dataset(8, 191, 19, 241);
+  create_dataset(9, 2048, 2048, 2048);
   return 0;
 }

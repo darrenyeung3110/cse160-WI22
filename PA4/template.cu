@@ -45,23 +45,23 @@ __global__ void matrixMultiplyShared(float *A, float *B, float *C,
         int aRow = row; int aCol = i; 
         int bRow = j; int bCol = col; 
         int bTransposedRow = bCol; int bTransposedCol = bRow; 
-        if (aRow >= 0 && aRow < numARows && aCol >= 0 && aCol < numAColumns) {
+        if (aRow < numARows && aCol < numAColumns) {
             int collapsedAIndex = (aRow * numAColumns) + aCol; 
             float aValue = A[collapsedAIndex]; 
             subMatrixA[tx][ty] = aValue; 
         }
-        if (bRow >= 0 && bRow < numBRows && bCol >= 0 && bCol < numBColumns) {
+        if (bRow < numBRows && bCol < numBColumns) {
             int collapsedBIndex = (bRow * numBColumns) + bCol; 
             int collapsedBTransposedIndex = bTransposedRow * numBRows + bTransposedCol; 
-            float bValue = B[collapsedBIndex]; 
-            subMatrixB[tx][ty] = bValue; 
+            float bTransposedValue = B[collapsedBTransposedIndex]; 
+            subMatrixB[ty][tx] = bTransposedValue; 
         }
         __syncthreads(); 
-        if (!(row < 0 || row >= numCRows || col < 0 || col >= numCColumns)) {
+        if (!(row >= numCRows || col >= numCColumns)) {
             // this is the issue here
             int limit = minimum(BLOCK_WIDTH, elementsLeft); 
             for (int k = 0; k < limit; k++) {
-                dotProduct += subMatrixA[tx][k] * subMatrixB[k][ty]; 
+                dotProduct += subMatrixA[tx][k] * subMatrixB[ty][k]; 
             }
             elementsLeft -= limit; 
         }
@@ -69,7 +69,7 @@ __global__ void matrixMultiplyShared(float *A, float *B, float *C,
         // printf("%d %d %f\n", row, col, dotProduct);
     }
     // printf("%d %d\n", row, col); 
-    if (!(row < 0 || row >= numCRows || col < 0 || col >= numCColumns)) {
+    if (!(row >= numCRows || col >= numCColumns)) {
         C[row*numCColumns+col] = dotProduct; 
     }
 }
@@ -166,7 +166,7 @@ int main(int argc, char **argv) {
     gpuTKTime_start(GPU, "Copying input memory to the GPU.");
     //@@ Copy memory to the GPU here
     cudaMemcpy(deviceA, hostA, aSize*(sizeof(float)), cudaMemcpyHostToDevice);
-    cudaMemcpy(deviceB, hostB, bSize*(sizeof(float)), cudaMemcpyHostToDevice);
+    cudaMemcpy(deviceB, hostBTransposed, bSize*(sizeof(float)), cudaMemcpyHostToDevice);
     gpuTKTime_stop(GPU, "Copying input memory to the GPU.");
 
     //@@ Initialize the grid and block dimensions here

@@ -11,7 +11,7 @@
     }                                                                     \
   } while (0)
 
-#define BLOCK_WIDTH 2
+#define BLOCK_WIDTH 16
 // block size 2x2
 // Compute C = A * Bx 
 __global__ void matrixMultiply(float *A, float *B, float *C, int numARows,
@@ -89,16 +89,8 @@ int main(int argc, char **argv) {
   gpuTKTime_stop(GPU, "Copying input memory to the GPU.");
 
   //@@ Initialize the grid and block dimensions here
-  int gridRows;
-  int gridCols; 
-  if (numCRows % 2 != 0) 
-      gridRows = (numCRows + 1) / 2; 
-  else 
-      gridRows = (numCRows) / 2; 
-  if (numCColumns % 2 != 0) 
-      gridCols = (numCColumns + 1) / 2; 
-  else 
-      gridCols = numCColumns / 2; 
+  int gridRows = ceil(((float)numCRows) / BLOCK_WIDTH); 
+  int gridCols = ceil(((float)numCColumns) / BLOCK_WIDTH); 
 
   dim3 grid_size(gridRows, gridCols); 
   dim3 block_size(BLOCK_WIDTH, BLOCK_WIDTH); // 2x2
