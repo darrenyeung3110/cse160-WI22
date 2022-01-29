@@ -10,80 +10,158 @@
     }                                                                     \
   } while (0)
 
+#define BLOCK_WIDTH 2
+
+
+// TODO: WHEN DIMENSIONS ARE NOT A MULTIPLE OF 16, SHIT IS WRONG
+
 // Compute C = A * B
 __global__ void matrixMultiplyShared(float *A, float *B, float *C,
                                      int numARows, int numAColumns,
                                      int numBRows, int numBColumns,
                                      int numCRows, int numCColumns) {
-  //@@ Insert code to implement matrix multiplication here
-  //@@ You have to use shared memory for this lab
+    //@@ Insert code to implement matrix multiplication here
+    //@@ You have to use shared memory for this lab
+    __shared__ float subMatrixA[BLOCK_WIDTH][BLOCK_WIDTH];
+    __shared__ float subMatrixB[BLOCK_WIDTH][BLOCK_WIDTH];
+    int bx = blockIdx.x; int by = blockIdx.y;
+    int tx = threadIdx.x; int ty = threadIdx.y; 
+
+    // row, col refers to the element that we are working on in the output matrix
+    int row = (bx * BLOCK_WIDTH) + tx;
+    int col = (by * BLOCK_WIDTH) + ty;
+    if (row < 0 || row >= numCRows || col < 0 || col >= numCColumns) {
+        return; 
+    }
+    // printf("%d %d\n", row, col); 
+    float dotProduct = 0; 
+    // iterating across a col is the same thing as iterating across b row
+    for (int i = ty, j = tx; i < numAColumns && j < numBRows; i += BLOCK_WIDTH, j += BLOCK_WIDTH) {
+        int aRow = row; int aCol = i; 
+        int bRow = j; int bCol = col; 
+        if (aRow >= 0 && aRow < numARows && aCol >= 0 && aCol < numAColumns && bRow >= 0 && bRow < numBRows && 
+        bCol >= 0 && bCol < numBColumns) {
+            int collapsedAIndex = (aRow * numAColumns) + aCol; 
+            int collapsedBIndex = (bRow * numBColumns) + bCol; 
+            float aValue = A[collapsedAIndex]; 
+            float bValue = B[collapsedBIndex]; 
+            subMatrixA[tx][ty] = aValue; 
+            // WTF
+            subMatrixB[ty][tx] = bValue; 
+        }
+        __syncthreads(); 
+        // this is the issue here
+        if ()
+        for (int k = 0; k < BLOCK_WIDTH; k++) {
+            dotProduct += subMatrixA[tx][k] * subMatrixB[k][ty]; 
+        }
+        __syncthreads(); 
+    }
+    // printf("%d %d\n", row, col); 
+    C[row*numCColumns+col] = dotProduct; 
 }
 
 int main(int argc, char **argv) {
-  gpuTKArg_t args;
-  float *hostA; // The A matrix
-  float *hostB; // The B matrix
-  float *hostC; // The output C matrix
-  float *deviceA;
-  float *deviceB;
-  float *deviceC;
-  int numARows;    // number of rows in the matrix A
-  int numAColumns; // number of columns in the matrix A
-  int numBRows;    // number of rows in the matrix B
-  int numBColumns; // number of columns in the matrix B
-  int numCRows;    // number of rows in the matrix C (you have to set this)
-  int numCColumns; // number of columns in the matrix C (you have to set
+    gpuTKArg_t args;
+    float *hostA; // The A matrix
+    float *hostB; // The B matrix
+    float *hostC; // The output C matrix
+    float *deviceA;
+    float *deviceB;
+    float *deviceC;
+    int numARows;    // number of rows in the matrix A
+    int numAColumns; // number of columns in the matrix A
+    int numBRows;    // number of rows in the matrix B
+    int numBColumns; // number of columns in the matrix B
+    int numCRows;    // number of rows in the matrix C (you have to set this)
+    int numCColumns; // number of columns in the matrix C (you have to set
                    // this)
 
-  args = gpuTKArg_read(argc, argv);
+    args = gpuTKArg_read(argc, argv);
 
-  gpuTKTime_start(Generic, "Importing data and creating memory on host");
-  hostA = (float *)gpuTKImport(gpuTKArg_getInputFile(args, 0), &numARows,
+    gpuTKTime_start(Generic, "Importing data and creating memory on host");
+    hostA = (float *)gpuTKImport(gpuTKArg_getInputFile(args, 0), &numARows,
                             &numAColumns);
-  hostB = (float *)gpuTKImport(gpuTKArg_getInputFile(args, 1), &numBRows,
+    hostB = (float *)gpuTKImport(gpuTKArg_getInputFile(args, 1), &numBRows,
                             &numBColumns);
-  //@@ Set numCRows and numCColumns
-  numCRows    = 0;
-  numCColumns = 0;
-  //@@ Allocate the hostC matrix
-  gpuTKTime_stop(Generic, "Importing data and creating memory on host");
 
-  gpuTKLog(TRACE, "The dimensions of A are ", numARows, " x ", numAColumns);
-  gpuTKLog(TRACE, "The dimensions of B are ", numBRows, " x ", numBColumns);
+    /*
+        for (int i = 0; i < numARows; i++) {
+            for (int j = 0; j < numAColumns; j++) {
+                printf("%f ", hostA[i*numAColumns+j]); 
+            }
+            printf("\n"); 
+        }
+        for (int i = 0; i < numBRows; i++) {
+            for (int j = 0; j < numBColumns; j++) {
+                printf("%f ", hostB[i*numBColumns+j]); 
+            }
+            printf("\n"); 
+        }
+    */
+    int aSize = numARows * numAColumns;
+    int bSize = numBRows * numBColumns;
+    //@@ Set numCRows and numCColumns
+    numCRows = numARows; 
+    numCColumns = numBColumns; 
+    int cSize = numCRows * numCColumns; 
+    //@@ Allocate the hostC matrix 
+    hostC = (float*)malloc(cSize * sizeof(float));
+    gpuTKTime_stop(Generic, "Importing data and creating memory on host");
 
-  gpuTKTime_start(GPU, "Allocating GPU memory.");
-  //@@ Allocate GPU memory here
+    gpuTKLog(TRACE, "The dimensions of A are ", numARows, " x ", numAColumns);
+    gpuTKLog(TRACE, "The dimensions of B are ", numBRows, " x ", numBColumns);
 
-  gpuTKTime_stop(GPU, "Allocating GPU memory.");
+    gpuTKTime_start(GPU, "Allocating GPU memory.");
+    //@@ Allocate GPU memory here
+    cudaMalloc((void**)&deviceA, aSize * (sizeof(float)));
+    cudaMalloc((void**)&deviceB, bSize * (sizeof(float)));
+    cudaMalloc((void**)&deviceC, cSize * (sizeof(float)));
+    gpuTKTime_stop(GPU, "Allocating GPU memory.");
 
-  gpuTKTime_start(GPU, "Copying input memory to the GPU.");
-  //@@ Copy memory to the GPU here
+    gpuTKTime_start(GPU, "Copying input memory to the GPU.");
+    //@@ Copy memory to the GPU here
+    cudaMemcpy(deviceA, hostA, aSize*(sizeof(float)), cudaMemcpyHostToDevice);
+    cudaMemcpy(deviceB, hostB, bSize*(sizeof(float)), cudaMemcpyHostToDevice);
+    gpuTKTime_stop(GPU, "Copying input memory to the GPU.");
 
-  gpuTKTime_stop(GPU, "Copying input memory to the GPU.");
+    //@@ Initialize the grid and block dimensions here
+    int gridRows = ceil(((float)numCRows) / BLOCK_WIDTH); 
+    int gridColumns = ceil(((float)numCColumns) / BLOCK_WIDTH); 
+    dim3 gridSize(gridRows, gridColumns); 
+    dim3 blockSize(BLOCK_WIDTH, BLOCK_WIDTH); 
 
-  //@@ Initialize the grid and block dimensions here
+    gpuTKTime_start(Compute, "Performing CUDA computation");
+    //@@ Launch the GPU Kernel here
+    matrixMultiplyShared<<<gridSize, blockSize>>>(deviceA, deviceB, deviceC, numARows, numAColumns, numBRows,
+    numBColumns, numCRows, numCColumns);
+    cudaDeviceSynchronize();
+    gpuTKTime_stop(Compute, "Performing CUDA computation");
 
-  gpuTKTime_start(Compute, "Performing CUDA computation");
-  //@@ Launch the GPU Kernel here
+    gpuTKTime_start(Copy, "Copying output memory to the CPU");
+    //@@ Copy the GPU memory back to the CPU here
+    cudaMemcpy(hostC, deviceC, cSize *(sizeof(float)), cudaMemcpyDeviceToHost);
+    gpuTKTime_stop(Copy, "Copying output memory to the CPU");
+    for (int i = 0; i < numCRows; i++) {
+        for (int j = 0; j < numCColumns; j++) {
+            printf("%f ", hostC[numCColumns*i+j]);
+        }
+        printf("\n"); 
+    }
 
-  cudaDeviceSynchronize();
-  gpuTKTime_stop(Compute, "Performing CUDA computation");
+    gpuTKTime_start(GPU, "Freeing GPU Memory");
+    //@@ Free the GPU memory here
+    cudaFree(deviceA); 
+    cudaFree(deviceB); 
+    cudaFree(deviceC); 
 
-  gpuTKTime_start(Copy, "Copying output memory to the CPU");
-  //@@ Copy the GPU memory back to the CPU here
+    gpuTKTime_stop(GPU, "Freeing GPU Memory");
 
-  gpuTKTime_stop(Copy, "Copying output memory to the CPU");
+    gpuTKSolution(args, hostC, numCRows, numCColumns);
 
-  gpuTKTime_start(GPU, "Freeing GPU Memory");
-  //@@ Free the GPU memory here
+    free(hostA);
+    free(hostB);
+    free(hostC);
 
-  gpuTKTime_stop(GPU, "Freeing GPU Memory");
-
-  gpuTKSolution(args, hostC, numCRows, numCColumns);
-
-  free(hostA);
-  free(hostB);
-  free(hostC);
-
-  return 0;
+    return 0;
 }

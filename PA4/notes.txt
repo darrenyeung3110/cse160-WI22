@@ -1,0 +1,15 @@
+Main thing to keep track of: tranpose at the end 
+And also tiling
+
+Thread block of 16x16 is a common choice
+Thread blocks must execute independently (must not rely on each other ) because
+can be parallel, in sequence we don't know. Gets scheduled along any SM 
+
+Threads WITHIN a block can cooperate by shared memory
+
+Threads in a block run logically in parallel but physically not in parallel 
+
+
+
+
+
