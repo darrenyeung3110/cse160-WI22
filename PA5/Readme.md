@@ -9,9 +9,9 @@ To use the constant memory for the convolution mask, you can first transfer the 
 
 Convolution is used in many fields, such as image processing for image filtering. A standard image convolution formula for a 5x5 convolution filter `M` with an Image `I` is:
 
-$$ P_{i,j,c} = \sum_{x=-2}^{2} \sum_{y=-2}^2 I_{i+x,j+y,c} * M_{x,y} $$
+![image](https://user-images.githubusercontent.com/72691772/152750827-282c6039-8131-46c6-8298-b36ed74d84e1.PNG)
 
-where $P_{i,j,c}$ is the output pixel at position `i,j` in channel `c`, $I_{i,j,c}$ is the input pixel at `i,j` in channel `c` (the number of channels will always be 3 for this MP corresponding to the RGB values), and $M_{x,y}$ is the mask at position `x,y`.
+where P<sub>i,j,c</sub> is the output pixel at position `i,j` in channel `c`, I<sub>i,j,c</sub> is the input pixel at `i,j` in channel `c` (the number of channels will always be 3 for this PA corresponding to the RGB values), and M<sub>x,y</sub> is the mask at position `x,y`.
 
 ## Input Data
 
