@@ -24,6 +24,8 @@ Recommended Block dimensions are 16 x 16.
 
 The `template.cu` file contains the code for the programming assignment. There is a Makefile included which compiles it and links it with the libgputk CUDA library automatically. It can be run by typing `make` from the PA4 folder. It generates a `solution` output file. During development, make sure to run the `make clean` command before running `make`. 
 
+Edit (01/31/2022): To complie the program for debugging, use the `make debug` command.
+
 ## How to test
 
 Use the `make run` command to test your program. There are a total of 9 tests on which your program will be evaluated for (functional) correctness. Use the `make run_big` command to test your program on a big matrix size. Since PA3 and PA4 are functionally the same, we will use the last test case (`make run_big`) to verify if your programs meet the speedup requirements that you should get using shared memory. The timing requirements will only be strict enough to ensure students cannot submit PA3's solution in PA4 and get credit.
