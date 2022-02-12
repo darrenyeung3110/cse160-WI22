@@ -15,8 +15,8 @@ char *generateInput(int /*datasetNum*/, char *dirName,
 char *generateMask(int /*datasetNum*/, char *dirName) {
   // Mask generation parameters
   gpuTKRaw_GenerateParams_t raw_params;
-  raw_params.rows   = 5;
-  raw_params.cols   = 5;
+  raw_params.rows   = 5; 
+  raw_params.cols   = 5; 
   raw_params.minVal = 0;
   raw_params.maxVal = 1.0f / 25.0f;
   raw_params.type   = gpuTKType_float;
@@ -130,6 +130,7 @@ int main(void) {
   generate(4, 64, 3, 0, 1);
   generate(5, 228, 128, 0, 1);
   generate(6, 28, 12, 0, 1);
+  generate(7, 5, 5, 0, 1);
 
   return 0;
 }

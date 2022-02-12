@@ -37,25 +37,28 @@ __global__ void matrixMultiplyShared(float *A, float *B, float *C,
     // row, col refers to the element that we are working on in the output matrix
     int row = (by * BLOCK_WIDTH) + ty;
     int col = (bx * BLOCK_WIDTH) + tx;
-    // printf("%d %d\n", row, col); 
+
     float dotProduct = 0; 
     int coverLimit = ceil(((float)numAColumns) / BLOCK_WIDTH) * BLOCK_WIDTH - 1; 
     int elementsLeft = numAColumns; // also = to numBRows
     for (int i = tx, j = ty, cover = BLOCK_WIDTH-1; cover <= coverLimit; i += BLOCK_WIDTH, j += BLOCK_WIDTH, cover += BLOCK_WIDTH) {
         int aRow = row; int aCol = i; 
         int bRow = j; int bCol = col; 
+        // bring in a value from the A matrix into shared memory
         if (aRow < numARows && aCol < numAColumns) {
             int collapsedAIndex = (aRow * numAColumns) + aCol; 
             float aValue = A[collapsedAIndex]; 
             subMatrixA[ty][tx] = aValue; 
         }
+        // bring in a value from the B matrix into shared memory
         if (bRow < numBRows && bCol < numBColumns) {
             int collapsedBIndex = (bRow * numBColumns) + bCol; 
             float bValue = B[collapsedBIndex]; 
             subMatrixB[ty][tx] = bValue; 
         }
         __syncthreads(); 
-        if (!(row >= numCRows || col >= numCColumns)) {
+        // computing a partial dot product 
+        if ((row <  numCRows && col < numCColumns)) {
             int limit = minimum(BLOCK_WIDTH, elementsLeft); 
             for (int k = 0; k < limit; k++) {
                 dotProduct += subMatrixA[ty][k] * subMatrixB[k][tx]; 
@@ -63,10 +66,9 @@ __global__ void matrixMultiplyShared(float *A, float *B, float *C,
             elementsLeft -= limit; 
         }
         __syncthreads(); 
-        // printf("%d %d %f\n", row, col, dotProduct);
     }
-    // printf("%d %d\n", row, col); 
-    if (!(row >= numCRows || col >= numCColumns)) {
+    // if row and and col is in range of the C matrix
+    if ((row <  numCRows && col < numCColumns)) {
         C[row*numCColumns+col] = dotProduct; 
     }
 }
@@ -98,29 +100,12 @@ int main(int argc, char **argv) {
     hostB = (float *)gpuTKImport(gpuTKArg_getInputFile(args, 1), &numBRows,
                             &numBColumns);
 
-    /*
-        for (int i = 0; i < numARows; i++) {
-            for (int j = 0; j < numAColumns; j++) {
-                printf("%f ", hostA[i*numAColumns+j]); 
-            }
-            printf("\n"); 
-        }
-        for (int i = 0; i < numBRows; i++) {
-            for (int j = 0; j < numBColumns; j++) {
-                printf("%f ", hostB[i*numBColumns+j]); 
-            }
-            printf("\n"); 
-        }
-    */
     int aSize = numARows * numAColumns;
     int bSize = numBRows * numBColumns;
     //@@ Set numCRows and numCColumns
     numCRows = numARows; 
     numCColumns = numBColumns; 
     int cSize = numCRows * numCColumns; 
-    //@@ Set numBTransposedRows and numBTransposedColumns
-    numBTransposedRows = numBColumns;
-    numBTransposedColumns = numBRows;
 
     //@@ Allocate the hostC matrix 
     hostC = (float*)malloc(cSize * sizeof(float));
@@ -139,23 +124,13 @@ int main(int argc, char **argv) {
     gpuTKTime_stop(GPU, "Allocating GPU memory.");
 
     //@@ Transpose B matrix here
-    for (int i = 0; i < numBRows; i++) {
-        for (int j = 0; j < numBColumns; j++) {
-            int bti = j; int btj = i; 
-            int rawIndexOriginal = i * numBColumns + j; 
-            int rawIndexTransposed = bti * numBTransposedColumns + btj;
-            hostBTransposed[rawIndexTransposed] = hostB[rawIndexOriginal]; 
-        }
-    }
-    // print the first test case
     /*
-        if (numARows == 2) {
-            for (int i = 0; i < numBTransposedRows; i++) {
-                for (int j = 0; j < numBTransposedColumns; j++) {
-                    int index = i * numBTransposedColumns + j; 
-                    printf("%f ", hostBTransposed[index]); 
-                }
-                printf("\n"); 
+        for (int i = 0; i < numBRows; i++) {
+            for (int j = 0; j < numBColumns; j++) {
+                int bti = j; int btj = i; 
+                int rawIndexOriginal = i * numBColumns + j; 
+                int rawIndexTransposed = bti * numBTransposedColumns + btj;
+                hostBTransposed[rawIndexTransposed] = hostB[rawIndexOriginal]; 
             }
         }
     */
@@ -169,6 +144,7 @@ int main(int argc, char **argv) {
     //@@ Initialize the grid and block dimensions here
     int gridRows = ceil(((float)numCRows) / BLOCK_WIDTH); 
     int gridColumns = ceil(((float)numCColumns) / BLOCK_WIDTH); 
+
     dim3 gridSize(gridColumns, gridRows); 
     dim3 blockSize(BLOCK_WIDTH, BLOCK_WIDTH); 
 
@@ -183,14 +159,6 @@ int main(int argc, char **argv) {
     //@@ Copy the GPU memory back to the CPU here
     cudaMemcpy(hostC, deviceC, cSize *(sizeof(float)), cudaMemcpyDeviceToHost);
     gpuTKTime_stop(Copy, "Copying output memory to the CPU");
-    if (numARows == 5) {
-        for (int i = 0; i < numCRows; i++) {
-            for (int j = 0; j < numCColumns; j++) {
-                printf("%f ", hostC[numCColumns*i+j]);
-            }
-            printf("\n"); 
-        }
-    }
 
     gpuTKTime_start(GPU, "Freeing GPU Memory");
     //@@ Free the GPU memory here

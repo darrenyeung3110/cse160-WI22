@@ -35,33 +35,30 @@ __global__ void matrixMultiplyShared(float *A, float *B, float *C,
     int tx = threadIdx.x; int ty = threadIdx.y; 
 
     // row, col refers to the element that we are working on in the output matrix
-    int row = (bx * BLOCK_WIDTH) + tx;
-    int col = (by * BLOCK_WIDTH) + ty;
+    int row = (by * BLOCK_WIDTH) + ty;
+    int col = (bx * BLOCK_WIDTH) + tx;
     // printf("%d %d\n", row, col); 
     float dotProduct = 0; 
     int coverLimit = ceil(((float)numAColumns) / BLOCK_WIDTH) * BLOCK_WIDTH - 1; 
     int elementsLeft = numAColumns; // also = to numBRows
-    for (int i = ty, j = tx, cover = BLOCK_WIDTH-1; cover <= coverLimit; i += BLOCK_WIDTH, j += BLOCK_WIDTH, cover += BLOCK_WIDTH) {
+    for (int i = tx, j = ty, cover = BLOCK_WIDTH-1; cover <= coverLimit; i += BLOCK_WIDTH, j += BLOCK_WIDTH, cover += BLOCK_WIDTH) {
         int aRow = row; int aCol = i; 
         int bRow = j; int bCol = col; 
-        int bTransposedRow = bCol; int bTransposedCol = bRow; 
         if (aRow < numARows && aCol < numAColumns) {
             int collapsedAIndex = (aRow * numAColumns) + aCol; 
             float aValue = A[collapsedAIndex]; 
-            subMatrixA[tx][ty] = aValue; 
+            subMatrixA[ty][tx] = aValue; 
         }
         if (bRow < numBRows && bCol < numBColumns) {
             int collapsedBIndex = (bRow * numBColumns) + bCol; 
-            int collapsedBTransposedIndex = bTransposedRow * numBRows + bTransposedCol; 
-            float bTransposedValue = B[collapsedBTransposedIndex]; 
-            subMatrixB[ty][tx] = bTransposedValue; 
+            float bValue = B[collapsedBIndex]; 
+            subMatrixB[ty][tx] = bValue; 
         }
         __syncthreads(); 
-        if (!(row >= numCRows || col >= numCColumns)) {
-            // this is the issue here
+        if ((row <  numCRows && col < numCColumns)) {
             int limit = minimum(BLOCK_WIDTH, elementsLeft); 
             for (int k = 0; k < limit; k++) {
-                dotProduct += subMatrixA[tx][k] * subMatrixB[ty][k]; 
+                dotProduct += subMatrixA[ty][k] * subMatrixB[k][tx]; 
             }
             elementsLeft -= limit; 
         }
@@ -69,7 +66,7 @@ __global__ void matrixMultiplyShared(float *A, float *B, float *C,
         // printf("%d %d %f\n", row, col, dotProduct);
     }
     // printf("%d %d\n", row, col); 
-    if (!(row >= numCRows || col >= numCColumns)) {
+    if ((row <  numCRows && col < numCColumns)) {
         C[row*numCColumns+col] = dotProduct; 
     }
 }
@@ -166,13 +163,14 @@ int main(int argc, char **argv) {
     gpuTKTime_start(GPU, "Copying input memory to the GPU.");
     //@@ Copy memory to the GPU here
     cudaMemcpy(deviceA, hostA, aSize*(sizeof(float)), cudaMemcpyHostToDevice);
-    cudaMemcpy(deviceB, hostBTransposed, bSize*(sizeof(float)), cudaMemcpyHostToDevice);
+    cudaMemcpy(deviceB, hostB, bSize*(sizeof(float)), cudaMemcpyHostToDevice);
     gpuTKTime_stop(GPU, "Copying input memory to the GPU.");
 
     //@@ Initialize the grid and block dimensions here
     int gridRows = ceil(((float)numCRows) / BLOCK_WIDTH); 
     int gridColumns = ceil(((float)numCColumns) / BLOCK_WIDTH); 
-    dim3 gridSize(gridRows, gridColumns); 
+
+    dim3 gridSize(gridColumns, gridRows); 
     dim3 blockSize(BLOCK_WIDTH, BLOCK_WIDTH); 
 
     gpuTKTime_start(Compute, "Performing CUDA computation");
@@ -186,14 +184,17 @@ int main(int argc, char **argv) {
     //@@ Copy the GPU memory back to the CPU here
     cudaMemcpy(hostC, deviceC, cSize *(sizeof(float)), cudaMemcpyDeviceToHost);
     gpuTKTime_stop(Copy, "Copying output memory to the CPU");
-    if (numARows == 5) {
-        for (int i = 0; i < numCRows; i++) {
-            for (int j = 0; j < numCColumns; j++) {
-                printf("%f ", hostC[numCColumns*i+j]);
+
+    /*
+        if (numARows == 5) {
+            for (int i = 0; i < numCRows; i++) {
+                for (int j = 0; j < numCColumns; j++) {
+                    printf("%f ", hostC[numCColumns*i+j]);
+                }
+                printf("\n"); 
             }
-            printf("\n"); 
         }
-    }
+    */
 
     gpuTKTime_start(GPU, "Freeing GPU Memory");
     //@@ Free the GPU memory here
@@ -211,3 +212,4 @@ int main(int argc, char **argv) {
 
     return 0;
 }
+
