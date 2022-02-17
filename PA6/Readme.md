@@ -3,7 +3,7 @@
 
 ## Objective
 
-This is the first part of a three part project implementing and optimizing the forward pass of a convolution layer using CUDA. Convolutional layers are the primary building blocks of convolutional neural networks (CNNs), which are used for tasks like image classification, object detection, natural language processingm and recommendation systems. 
+This is the first part of a three part project implementing and optimizing the forward pass of a convolution layer using CUDA. Convolutional layers are the primary building blocks of convolutional neural networks (CNNs), which are used for tasks like image classification, object detection, natural language processing and recommendation systems. 
 
 You will be working with a modified version of the LeNet5 architceture shown bellow:
 
@@ -17,11 +17,11 @@ Your optimized CUDA implementation of the convolutional layer will be used to pe
 
 ## Input Data
 
-The network will be tested on the [Fashion MNIST dataset](https://github.com/zalandoresearch/fashion-mnist) with 10,000 single channel images, each of dimensions 86x86. The output layer consists of 10 nodes, where each node represents the likelihood of the input belonging to one of the 10 classes (T-shit, dress, sneaker, boot, etc).
+The network will be tested on the [Fashion MNIST dataset](https://github.com/zalandoresearch/fashion-mnist) which contains 10,000 single channel images each of dimensions 86x86 but we will only use 1000 of these at a time. The output layer consists of 10 nodes, where each node represents the likelihood of the input belonging to one of the 10 classes (T-shit, dress, sneaker, boot, etc).
 
 ## Instructions
 
-This assignment requires you to complete a cpu implementation of the convolutional layer. Performance of the CPU implementation is not important, this assignment is intended to build your understanding of a naive convolution, the network itself, and how to test your network. The only file you need to update to implement the forward convolution is:
+This assignment requires you to complete a CPU implementation of the convolutional layer. Performance of the CPU implementation is not important as this assignment is intended to build your understanding of a naive convolution, the network itself, and how to test your network. The only file you need to update to implement the forward convolution is:
 `src/layer/custom/cpu-new-forward.cc`
 The psudo-code for this implementation is as follows:
 ```{.ruby}
@@ -37,7 +37,10 @@ for b = 0 .. B                     // for each image in the batch
                             y[b][m][h][w] += x[b][c][h + p][w + q] * k[m][c][p][q]
             }
 ```
+This animation can help visualize this process better:
+![ConvExample](https://stanford.edu/~shervine/teaching/cs-230/illustrations/convolution-layer-a.png?1c517e00cb8d709baf32fc3d39ebae67)
 
+*Source: https://stanford.edu/~shervine/teaching/cs-230/cheatsheet-convolutional-neural-networks#layer*
 
 ## How to Compile
 
@@ -45,7 +48,7 @@ The `src/layer/custom/cpu-new-forward.cc` file contains the code for the program
 
 ## How to test
 
-Use the `make run` command to test your program which will run your program on a batch size of 1000 images.
+Use the `make run` command to test your program which will run your program on a batch size of 1000 images. This will automatically compile your source (equivilent to executing `make run` and then running `./m1 1000`).
 
 ## Test Output 
 
@@ -91,3 +94,7 @@ The accuracy of your implementation should meet the 0.886 of our implementation.
 ## Submission
 
 Submit the src/layer/custom/cpu-new-forward.cc file on gradescope.
+
+## Credit
+
+This project is originally from UIUC ECE408 and builds off a number of open source projects including the Fashion MNIST dataset, mini-dnn-cpp, and the Eigen project.
