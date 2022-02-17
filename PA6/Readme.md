@@ -48,7 +48,7 @@ The `src/layer/custom/cpu-new-forward.cc` file contains the code for the program
 
 ## How to test
 
-Use the `make run` command to test your program which will run your program on a batch size of 1000 images. This will automatically compile your source (equivilent to executing `make run` and then running `./m1 1000`).
+Use the `make run` command to test your program which will run your program on a batch size of 1000 images. This will automatically compile your source (equivilent to executing `make m1` and then running `./m1 1000`).
 
 ## Test Output 
 
