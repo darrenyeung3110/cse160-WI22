@@ -1,5 +1,5 @@
 
-# Programming Assignment 6: CNN Forward Layer CPU Implementation
+# Programming Assignment 7: CNN Forward Layer CPU Implementation
 
 ## Objective
 
