@@ -1,5 +1,5 @@
 
-# Programming Assignment 6: CNN Foward Layer CPU Implementation
+# Programming Assignment 6: CNN Forward Layer CPU Implementation
 
 ## Objective
 
@@ -17,7 +17,7 @@ Your optimized CUDA implementation of the convolutional layer will be used to pe
 
 ## Input Data
 
-The network will be tested on the [Fashion MNIST dataset](https://github.com/zalandoresearch/fashion-mnist) which contains 10,000 single channel images each of dimensions 86x86 but we will only use 1000 of these at a time. The output layer consists of 10 nodes, where each node represents the likelihood of the input belonging to one of the 10 classes (T-shit, dress, sneaker, boot, etc).
+The network will be tested on the [Fashion MNIST dataset](https://github.com/zalandoresearch/fashion-mnist) which contains 10,000 single channel images each of dimensions 86x86 but we will only use 1000 of these at a time. The output layer consists of 10 nodes, where each node represents the likelihood of the input belonging to one of the 10 classes (T-shirt, dress, sneaker, boot, etc).
 
 ## Instructions
 
