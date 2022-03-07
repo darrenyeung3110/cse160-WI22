@@ -32,7 +32,7 @@ Here is a list of possible optimizations:
 * Multiple kernel implementations for different layer sizes
 * Input channel reduction: tree
 * Input channel reduction: atomics
-* Fixed point (FP16) arithmetic
+* Floating point (FP16) arithmetic
 * Using Streams to overlap computation with data transfer
 * Kernel fusion for unrolling and matrix-multiplication
 * An advanced matrix multiplication algorithm (register-tiled, for example)
