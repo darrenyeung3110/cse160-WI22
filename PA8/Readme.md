@@ -59,7 +59,7 @@ The accuracy of your implementation should meet the 0.886 that our implementatio
 
 ## Report
 
-In lieu of a quiz you will writeup your optimizations, their motivations, pointers or copy of relevent code, and what they accomplish.
+In lieu of a quiz, you will submit a brief writeup detailing your optimizations, their motivations, pointers or copy of relevent code, and what they accomplish. This should not be long, but it should be instructive. Describe where in your code these optimizations exist and the effect that they had on the runtime. 
 
 ## Submission and Grading
 
