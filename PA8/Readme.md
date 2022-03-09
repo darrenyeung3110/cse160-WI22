@@ -40,7 +40,7 @@ A list of possible optimizations include:
 * ...
 If you wish to use an optimization not listed here, please consult a course instructor.
 
-To receive full credit, you are expect to create an implementation that uses tiling, shared memory, and constant memory. If implemented correctly, those optimizations will yield substantial speedups over the naive solution (e.g., from PA7). Additional optimization will allow you to receive extra credit. 
+To receive full credit, you are expected to create an implementation that uses tiling, shared memory, and constant memory. If implemented correctly, those optimizations will yield substantial speedups over the naive solution (e.g., from PA7). Additional optimization will allow you to receive extra credit. 
 
 ## How to Compile
 
