@@ -21,9 +21,9 @@ The network will be tested on the [Fashion MNIST dataset](https://github.com/zal
 
 ## Instructions
 
-At this point you have already completed a GPU implementation of your convolutional layer.
+At this point you have already completed a GPU implementation of your convolutional layer. The goal of this assignment is to optimize that convolutional layer. You will be graded based on how well you optimize your code.
 
-Here is a list of possible optimizations:
+A list of possible optimizations include:
 * Shared Memory convolution
 * Weight matrix (kernel values) in constant memory
 * Tuning with restrict and loop unrolling (considered as one optimization only if you do both)
@@ -38,7 +38,9 @@ Here is a list of possible optimizations:
 * An advanced matrix multiplication algorithm (register-tiled, for example)
 * Using Tensor Cores to speed up matrix multiplication
 * ...
-If you wish to use an optimization not listed here, please consult a course staff member.
+If you wish to use an optimization not listed here, please consult a course instructor.
+
+To receive full credit, you are expect to create an implementation that uses tiling, shared memory, and constant memory. If implemented correctly, those optimizations will substantial speedups over the naive solution (e.g., from PA7). Additional optimization will allow you to receive extra credit. 
 
 ## How to Compile
 
