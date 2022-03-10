@@ -79,6 +79,11 @@ __host__ void GPUInterface::conv_forward_gpu_prolog(const float *host_y, const f
     //     std::cout<<"CUDA error: "<<cudaGetErrorString(error)<<std::endl;
     //     exit(-1);
     // }
+    printf("Height: %d\n", H); 
+    printf("Width: %d\n", W); 
+    printf("Kernel Length: %d\n", K); 
+    printf("M: %d\n", M); 
+    printf("C: %d\n", C); 
     int hout = H-K+1;
     int wout = W-K+1;
     int ysize = B*M*hout*wout; 
@@ -98,6 +103,7 @@ __host__ void GPUInterface::conv_forward_gpu_prolog(const float *host_y, const f
 __host__ void GPUInterface::conv_forward_gpu(float *device_y, const float *device_x, const float *device_k,
     const int B, const int M, const int C, const int H, const int W, const int K)
 {
+    printf("Size of K: %d\n", K); 
     // Set the kernel dimensions and call the kernel
     int hout = H-K+1;
     int wout = W-K+1;
@@ -134,7 +140,6 @@ __host__ void GPUInterface::conv_forward_gpu_epilog(float *host_y, float *device
     cudaFree(device_y); 
     cudaFree(device_x); 
     cudaFree(device_k); 
-
     cudaError_t error = cudaGetLastError();
     if(error != cudaSuccess) {
         std::cout<<"CUDA error: "<<cudaGetErrorString(error)<<std::endl;
