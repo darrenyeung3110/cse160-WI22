@@ -76,11 +76,13 @@ __global__ void conv_forward_kernel(float *y, const float *x, const float *k, co
         }
 
         // that means is a corner
-        if ((tx == BLOCK_WIDTH-1 && ty == BLOCK_WIDTH-1) || (h == H_out-1 && w == W_out-1)) {
+        if ((tx == BLOCK_WIDTH-1 || h == H_out-1) && (ty == BLOCK_WIDTH-1 || w == W_out-1)) {
             for (int i = 1; i <= K-1; i++) {
                 for (int j = 1; j <= K-1; j++) {
                     for (int c = 0; c < C; c++) {
-                        shared_x[tx+i][ty+j][c] = x4d(batch_image, c, h+i, w+j); 
+                        if (h+i < H && w+j < W) {
+                            shared_x[tx+i][ty+j][c] = x4d(batch_image, c, h+i, w+j); 
+                        }
                     }
                 }
             }
